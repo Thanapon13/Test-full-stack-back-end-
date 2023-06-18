@@ -38,7 +38,7 @@ exports.getUserId = (req, res, next) => {
 //       "Last name": req.body["Last name"],
 //       gender: req.body.gender,
 //       "Birth date": req.body["Birth date"],
-//       Image: req.body.Image || ""
+//       Image: req.body.Image
 //     };
 
 //     datauser.push(newUser);
@@ -53,36 +53,58 @@ exports.getUserId = (req, res, next) => {
 // };
 
 exports.createUser = async (req, res, next) => {
-  console.log(req.files);
   try {
+    // console.log("req.files:", req.files);
+
+    let value;
+
+    const profilePublicId = req.body.image
+      ? cloudinary.getPublicId(req.body.image)
+      : null;
+
+    if (!req.files || !req.files.Image) {
+      return res.status(400).json({ message: "Profile Image is required" });
+    }
+
+    if (req.files) {
+      const profileImage = await cloudinary.uploadProfile(
+        req.files.Image[0].path,
+        profilePublicId
+      );
+      value = { profileImage };
+    }
+
     const newUser = {
       id: datauser.length + 1,
       "First name": req.body["First name"],
       "Last name": req.body["Last name"],
       gender: req.body.gender,
       "Birth date": req.body["Birth date"],
-      Image: req.files.Image[0].path
+      Image: value
     };
+    console.log("newUser:", newUser);
 
     datauser.push(newUser);
-
     fs.writeFileSync(dataFilePath, JSON.stringify(datauser));
-
     console.log("User added successfully");
-
     res.status(200).json({ message: "Successfully created" });
   } catch (err) {
     next(err);
+  } finally {
+    if (req.files.Image) {
+      fs.unlinkSync(req.files.Image[0].path);
+    }
   }
 };
 
 exports.editUser = (req, res, next) => {
   try {
     const userId = parseInt(req.params.id);
-    // console.log("userId:", userId);
-    // console.log("---------------------------");
+    console.log("userId:", userId);
     const value = req.body;
-    // console.log("---------------------------");
+    console.log("value:", value);
+
+    console.log("datauser:", datauser);
 
     datauser.forEach(user => {
       if (user.id === userId) {
@@ -93,7 +115,7 @@ exports.editUser = (req, res, next) => {
         user.Image = value.Image;
       }
     });
-    // console.log("---------------------------");
+
     console.log("datauser:", datauser);
 
     res.status(200).json(value);

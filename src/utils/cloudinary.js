@@ -1,6 +1,6 @@
 const cloudinary = require("../config/cloudinary");
 
-exports.upload = async (filePath, publicId) => {
+exports.uploadProfile = async (filePath, publicId) => {
   const option = {
     unique_filename: false,
     use_filename: true,
