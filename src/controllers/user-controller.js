@@ -30,28 +30,6 @@ exports.getUserId = (req, res, next) => {
   }
 };
 
-// exports.createUser = async (req, res, next) => {
-//   try {
-//     const newUser = {
-//       id: datauser.length + 1,
-//       "First name": req.body["First name"],
-//       "Last name": req.body["Last name"],
-//       gender: req.body.gender,
-//       "Birth date": req.body["Birth date"],
-//       Image: req.body.Image
-//     };
-
-//     datauser.push(newUser);
-
-//     fs.writeFileSync(dataFilePath, JSON.stringify(datauser));
-
-//     console.log("User added successfully");
-//     res.status(200).json({ message: "Successfully created" });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
 exports.createUser = async (req, res, next) => {
   try {
     // console.log("req.files:", req.files);
@@ -104,7 +82,7 @@ exports.editUser = (req, res, next) => {
     const value = req.body;
     console.log("value:", value);
 
-    console.log("datauser:", datauser);
+    // console.log("datauser:", datauser);
 
     datauser.forEach(user => {
       if (user.id === userId) {
@@ -112,7 +90,6 @@ exports.editUser = (req, res, next) => {
         user["Last name"] = value["Last name"];
         user.gender = value.gender;
         user["Birth date"] = value["Birth date"];
-        user.Image = value.Image;
       }
     });
 
